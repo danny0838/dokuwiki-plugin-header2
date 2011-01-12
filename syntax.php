@@ -50,7 +50,7 @@ class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
 
     // no html in toc
     function _header_title_plain($text) {
-        return preg_replace( "#<[^>]*?>#", "" ,  $text);
+        return htmlspecialchars_decode(preg_replace( "#<[^>]*?>#", "" ,  $text),ENT_QUOTES);
     }
 
     // refer to p_get_instructions()
