@@ -47,7 +47,7 @@ class renderer_plugin_header2 extends Doku_Renderer_xhtml {
         // write the header
         $this->doc .= DOKU_LF.'<h'.$level;
         if ($level <= $conf['maxseclevel']) {
-            $this->doc .= ' class="' . $this->startSectionEdit($pos, 'section', $realtext) . '"';
+            $this->doc .= ' class="' . $this->startSectionEdit($pos, 'section', $text) . '"';
         }
         $this->doc .= '><a name="'.$hid.'" id="'.$hid.'">';
         $this->doc .= $realtext;
