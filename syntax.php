@@ -35,7 +35,7 @@ class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
         $title = trim($title);
 
         if ($handler->status['section']) $handler->_addCall('section_close',array(),$pos);
-		$handler->addPluginCall('header2',array($title,$level,$pos),$state,$pos,$match);
+        $handler->addPluginCall('header2',array($title,$level,$pos),$state,$pos,$match);
         $handler->_addCall('section_open',array($level),$pos);
         $handler->status['section'] = true;
         return null;
@@ -45,14 +45,14 @@ class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
      * Create output
      */
     function render($format, &$renderer, $data) {
-		list($title,$level,$pos) = $data;
-		// metadata decides toc, which should match xhtml except tags
-		if ($format == 'metadata') $format = 'xhtml';
-		$realtitle = $this->_header_title_syntax($title,$format);
-		$title = $this->_header_title_plain($realtitle);
-		$renderer->header($title,$level,$pos,$realtitle);
-		return true;
-	}
+        list($title,$level,$pos) = $data;
+        // metadata decides toc, which should match xhtml except tags
+        if ($format == 'metadata') $format = 'xhtml';
+        $realtitle = $this->_header_title_syntax($title,$format);
+        $title = $this->_header_title_plain($realtitle);
+        $renderer->header($title,$level,$pos,$realtitle);
+        return true;
+    }
 
     // no html in toc
     function _header_title_plain($text) {
