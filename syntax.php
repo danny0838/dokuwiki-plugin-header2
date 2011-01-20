@@ -12,8 +12,8 @@ if(!defined('DOKU_INC')) die();
  */
 class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
 
-    function getType() { return 'substition';}
-    function getPType() { return 'baseonly';}
+    function getType() { return 'baseonly';}
+    function getPType() { return 'block';}
     function getSort() { return 49; }
 
     /**
