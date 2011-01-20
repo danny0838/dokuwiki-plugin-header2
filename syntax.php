@@ -33,11 +33,9 @@ class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
         if($level < 1) $level = 1;
         $title = trim($title,'=');
         $title = trim($title);
-        $realtitle = $this->_header_title_html($title);
-        $title = $this->_header_title_plain($realtitle);
 
         if ($handler->status['section']) $handler->_addCall('section_close',array(),$pos);
-        $handler->_addCall('header',array($title,$level,$pos,$realtitle), $pos);
+		$handler->addPluginCall('header2',array($title,$level,$pos),$state,$pos,$match);
         $handler->_addCall('section_open',array($level),$pos);
         $handler->status['section'] = true;
         return null;
@@ -46,7 +44,15 @@ class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($format, &$renderer, $data) {}
+    function render($format, &$renderer, $data) {
+		list($title,$level,$pos) = $data;
+		// metadata decides toc, which should match xhtml except tags
+		if ($format == 'metadata') $format = 'xhtml';
+		$realtitle = $this->_header_title_syntax($title,$format);
+		$title = $this->_header_title_plain($realtitle);
+		$renderer->header($title,$level,$pos,$realtitle);
+		return true;
+	}
 
     // no html in toc
     function _header_title_plain($text) {
@@ -54,7 +60,7 @@ class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
     }
 
     // refer to p_get_instructions()
-    function _header_title_html($text) {
+    function _header_title_syntax($text,$format='xhtml') {
         $modes = p_get_parsermodes();
         // Create the parser
         $Parser = new Doku_Parser();
@@ -71,6 +77,6 @@ class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
         array_shift($p);
         array_pop($p);
         array_pop($p);
-        return p_render( 'xhtml', $p, $info);
+        return p_render( $format, $p, $info);
     }
 }
