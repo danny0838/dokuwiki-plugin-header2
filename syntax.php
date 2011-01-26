@@ -76,23 +76,82 @@ class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
                 $title = trim($renderer->doc);
                 $renderer->doc = $this->store;
                 $this->store = '';
+                // restore variable
                 if ($format=='metadata') {
                     $renderer->capture = $this->capture;
                 }
                 // create header
                 if($level < 1) $level = 1;
-                $realtitle = $title;
-                 // header() of metadata renderer will manage the escape later
-                 // FIXME: xhtml for 'preview' toc; metadata renderer for 'show' toc, so they may dismatch
-                if ($format == 'xhtml') $title = $this->_header_title_plain($realtitle);
-                $renderer->header($title,$level,$pos,$realtitle);
+                $method = '_' . $format . '_header';
+                if (method_exists($this,$method)) {
+                    // we have special procedure for the renderer
+                    $this->$method($title, $level, $pos, $renderer);
+                } else {
+                    // fall back to default renderer behavior
+                    $renderer->header($title,$level,$pos);
+                }
                 break;
         }
         return true;
     }
 
-    // removes html tags, for toc
-    function _header_title_plain($text) {
-        return htmlspecialchars_decode(preg_replace( "#<[^>]*?>#", "" ,  $text),ENT_QUOTES);
+    // simple function to strip all html tags
+    function _remove_html_tags($text) {
+        return preg_replace( "#<[^>]*?>#", "" ,  $text);
+    }
+
+    /**
+     * Revised procedures for renderers
+     *
+     * Basically adds &$renderer argument and replaces $this to $renderer,
+     * and our procedures of course.
+     */
+
+    function _xhtml_header($text, $level, $pos, &$renderer) {
+        global $conf;
+        
+        $displaytext = $text;  // <= added
+        $text = htmlspecialchars_decode($this->_remove_html_tags($text),ENT_QUOTES);  // <= added
+        if(!$text) return; //skip empty headlines
+
+        $hid = $renderer->_headerToLink($text,true);
+
+        //only add items within configured levels
+        $renderer->toc_additem($hid, $text, $level);
+
+        // adjust $node to reflect hierarchy of levels
+        $renderer->node[$level-1]++;
+        if ($level < $renderer->lastlevel) {
+            for ($i = 0; $i < $renderer->lastlevel-$level; $i++) {
+                $renderer->node[$renderer->lastlevel-$i-1] = 0;
+            }
+        }
+        $renderer->lastlevel = $level;
+
+        if ($level <= $conf['maxseclevel'] &&
+            count($renderer->sectionedits) > 0 &&
+            $renderer->sectionedits[count($renderer->sectionedits) - 1][2] === 'section') {
+            $renderer->finishSectionEdit($pos - 1);
+        }
+
+        // write the header
+        $renderer->doc .= DOKU_LF.'<h'.$level;
+        if ($level <= $conf['maxseclevel']) {
+            $renderer->doc .= ' class="' . $renderer->startSectionEdit($pos, 'section', $text) . '"';
+        }
+        $renderer->doc .= '><a name="'.$hid.'" id="'.$hid.'">';
+        $renderer->doc .= $displaytext;  // <= revised
+        $renderer->doc .= "</a></h$level>".DOKU_LF;
+    }
+
+    function _odt_header($text, $level, $pos, &$renderer){
+        $displaytext = $text;  // <= added
+        $text = $this->_remove_html_tags($text);  // <= added
+        $hid = $renderer->_headerToLink($text,true);
+        $renderer->doc .= '<text:h text:style-name="Heading_20_'.$level.'" text:outline-level="'.$level.'">';
+        $renderer->doc .= '<text:bookmark-start text:name="'.$hid.'"/>';
+        $renderer->doc .= $displaytext;  // <= revised
+        $renderer->doc .= '<text:bookmark-end text:name="'.$hid.'"/>';
+        $renderer->doc .= '</text:h>';
     }
 }

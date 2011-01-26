@@ -17,51 +17,17 @@ class renderer_plugin_header2 extends Doku_Renderer_xhtml {
         return ($format=='xhtml');
     }
 
-    // revision of parser/xhtml.php header()
-    function header($text, $level, $pos, $realtext=null) {
-        global $conf;
-        
-        if(!$text) return; //skip empty headlines
-
-        if (is_null($realtext)) $realtext = $text;
-        $hid = $this->_headerToLink($text,true);
-
-        //only add items within configured levels
-        $this->toc_additem($hid, $text, $level);
-
-        // adjust $node to reflect hierarchy of levels
-        $this->node[$level-1]++;
-        if ($level < $this->lastlevel) {
-            for ($i = 0; $i < $this->lastlevel-$level; $i++) {
-                $this->node[$this->lastlevel-$i-1] = 0;
-            }
-        }
-        $this->lastlevel = $level;
-
-        if ($level <= $conf['maxseclevel'] &&
-            count($this->sectionedits) > 0 &&
-            $this->sectionedits[count($this->sectionedits) - 1][2] === 'section') {
-            $this->finishSectionEdit($pos - 1);
-        }
-
-        // write the header
-        $this->doc .= DOKU_LF.'<h'.$level;
-        if ($level <= $conf['maxseclevel']) {
-            $this->doc .= ' class="' . $this->startSectionEdit($pos, 'section', $text) . '"';
-        }
-        $this->doc .= '><a name="'.$hid.'" id="'.$hid.'">';
-        $this->doc .= $realtext;
-        $this->doc .= "</a></h$level>".DOKU_LF;
-    }
+    /**
+     * $sectionedits is private and cannot be accessed by plugins,
+     * so this dirty hack is required
+     *
+     * Get rid of this renderer if it's fixed...
+     */
+    public $sectionedits = array(); // A stack of section edit data
 
     /**
      * Copied from xhtml.php, no change
-     *
-     * $sectionedits is private and cannot be accessed by plugin,
-     * so this dirty hack is required
      */
-    public $sectionedits = array(); // A stack of section edit data
-    
     public function startSectionEdit($start, $type, $title = null) {
         static $lastsecid = 0;
         $this->sectionedits[] = array(++$lastsecid, $start, $type, $title);
