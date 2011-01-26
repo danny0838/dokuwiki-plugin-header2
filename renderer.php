@@ -60,7 +60,7 @@ class renderer_plugin_header2 extends Doku_Renderer_xhtml {
      * $sectionedits is private and cannot be accessed by plugin,
      * so this dirty hack is required
      */
-    private $sectionedits = array(); // A stack of section edit data
+    public $sectionedits = array(); // A stack of section edit data
     
     public function startSectionEdit($start, $type, $title = null) {
         static $lastsecid = 0;
