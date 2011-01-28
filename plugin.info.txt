@@ -1,7 +1,7 @@
 base   header2
 author Danny Lin
 email  danny0838[at]pchome[dot]com[dot]tw
-date   2011-01-27
+date   2011-01-28
 name   Header2
 desc   Allows markup syntax in the header
 url    http://www.dokuwiki.org/plugin:header2

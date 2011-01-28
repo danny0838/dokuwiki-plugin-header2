@@ -154,4 +154,11 @@ class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
         $renderer->doc .= '<text:bookmark-end text:name="'.$hid.'"/>';
         $renderer->doc .= '</text:h>';
     }
+
+    function _xml_header($text, $level, $pos, &$renderer){
+        if (!$text) return; //skip empty headlines
+        $renderer->nextHeader  = '<header level="' . $level . '" pos="' . $pos . '">'.
+        $renderer->nextHeader .= $text;  // <= revised
+        $renderer->nextHeader .= '</header>'.DOKU_LF;
+    }
 }
