@@ -14,6 +14,10 @@ require_once DOKU_INC . 'inc/parser/xhtml.php';
 class renderer_plugin_header2 extends Doku_Renderer_xhtml {
 
     function canRender($format) {
+        // Only needed in previous wiki versions for compatibility
+        global $updateVersion;
+        if ($updateVersion>=38) return false;
+
         return ($format=='xhtml');
     }
 

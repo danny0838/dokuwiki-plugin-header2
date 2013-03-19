@@ -21,10 +21,20 @@ class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
      * Connect pattern to lexer
      */
     function connectTo($mode) {
+        // For compatibility with old wiki versions:
+        //   xhtml renderer crashes with this syntax
+        //   so only apply it when header2 renderer is configured
+        global $updateVersion, $conf;
+        if ($updateVersion<38 and $conf['renderer_xhtml']!='header2') return;
+
         $this->Lexer->addEntryPattern("[ \t]*={2,}(?=[^\n]+={2,}[ \t]*\n)", $mode, 'plugin_header2');
     }
 
     function postConnect() {
+        // For compatibility with old wiki versions
+        global $updateVersion, $conf;
+        if ($updateVersion<38 and $conf['renderer_xhtml']!='header2') return;
+
         $this->Lexer->addExitPattern('={2,}[ \t]*(?=\n)', 'plugin_header2');
     }
 
