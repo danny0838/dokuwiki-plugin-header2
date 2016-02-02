@@ -41,7 +41,7 @@ class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, &$handler){
+    function handle($match, $state, $pos, Doku_Handler $handler){
         switch ($state) {
             case DOKU_LEXER_ENTER :
                 $this->h_level = 7 - strspn($match,"=");
@@ -68,7 +68,7 @@ class syntax_plugin_header2 extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($format, &$renderer, $data) {
+    function render($format, Doku_Renderer $renderer, $data) {
         list($state,$level,$pos) = $data;
         switch ($state) {
             case DOKU_LEXER_ENTER :
